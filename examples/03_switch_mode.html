@@ -3,6 +3,7 @@
 <head>
   <title>JSONEditor | Switch mode</title>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- json editor -->
   <link rel="stylesheet" type="text/css" href="../jsoneditor.css">
@@ -19,7 +20,6 @@
       font: 10.5pt arial;
       color: #4d4d4d;
       line-height: 150%;
-      width: 500px;
     }
 
     code {
@@ -27,18 +27,11 @@
     }
 
     #jsoneditor {
-      width: 500px;
-      height: 500px;
+         height: 600px;
     }
   </style>
 </head>
 <body>
-
-<p>
-  Switch editor mode using the mode box.
-  Note that the mode can be changed programmatically as well using the method
-  <code>editor.setMode(mode)</code>, try it in the console of your browser.
-</p>
 
 <div id="jsoneditor"></div>
 
@@ -47,10 +40,26 @@
 
   var options = {
     mode: 'tree',
-    modes: ['code', 'form', 'text', 'tree', 'view'], // allowed modes
+    name: 'resume',
+    modes: ['tree', 'code'], //['code', 'form', 'text', 'tree', 'view'], // allowed modes
     error: function (err) {
       alert(err.toString());
+    },
+  editable: function (node) {
+    // node is an object like:
+    //   {
+    //     field: 'FIELD',
+    //     value: 'VALUE',
+    //     path: ['PATH', 'TO', 'NODE']
+    //   }
+    switch (node.field) {
+      default:
+        return {
+          field: false,
+          value: true
+        };
     }
+  }
   };
 
   var json = {
@@ -62,7 +71,17 @@
     "string": "Hello World"
   };
 
+  var xmlHttp = null;
+  var theUrl = "https://gist.githubusercontent.com/prat0318/6e57f270bcf710a9087f/raw/a9b24e09d97ecd54fe59c5e164314a8f2b560cd8/resume.json";
+
+  xmlHttp = new XMLHttpRequest();
+  xmlHttp.open( "GET", theUrl, false );
+  xmlHttp.send( null );
+  json = JSON.parse(xmlHttp.responseText);
+
   var editor = new JSONEditor(container, options, json);
+  len = editor.node.childs.length;
+  editor.node.childs[len-1].expand(false);
 </script>
 </body>
 </html>

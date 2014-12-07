@@ -126,6 +126,38 @@
   background-position: -48px 0;
 }
 
+.jsoneditor button.remove {
+  background-position: -24px -24px !important;
+}
+.jsoneditor button.remove:hover,
+.jsoneditor button.remove:focus {
+  background-position: -24px 0 !important;
+}
+
+.jsoneditor button.append {
+  background-position: 0 -24px !important;
+}
+.jsoneditor button.append:hover,
+.jsoneditor button.append:focus {
+  background-position: 0 0 !important;
+}
+
+.jsoneditor button.insert {
+  background-position: 0 -24px !important;
+}
+.jsoneditor button.insert:hover,
+.jsoneditor button.insert:focus {
+  background-position: 0 0 !important;
+}
+
+.jsoneditor button.duplicate {
+  background-position: -48px -24px !important;
+}
+.jsoneditor button.duplicate:hover,
+.jsoneditor button.duplicate:focus {
+  background-position: -48px 0 !important;
+}
+
 .jsoneditor-contextmenu button.sort-asc > .icon {
   background-position: -168px -24px;
 }

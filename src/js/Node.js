@@ -1206,26 +1206,32 @@ define(['./ContextMenu', './appendNodeFactory', './util'], function (ContextMenu
 
     if (this.editor.options.mode === 'tree') { // note: we take here the global setting
       var tdDrag = document.createElement('td');
-      if (this.editable.field) {
+      //if (this.editable.field) {
         // create draggable area
-        if (this.parent) {
+        if (this.parent && this.parent.type == 'array') {
           var domDrag = document.createElement('button');
           dom.drag = domDrag;
           domDrag.className = 'dragarea';
           domDrag.title = 'Drag to move this field (Alt+Shift+Arrows)';
           tdDrag.appendChild(domDrag);
         }
-      }
+      //}
       dom.tr.appendChild(tdDrag);
-
+      
       // create context menu
-      var tdMenu = document.createElement('td');
-      var menu = document.createElement('button');
-      dom.menu = menu;
-      menu.className = 'contextmenu';
-      menu.title = 'Click to open the actions menu (Ctrl+M)';
-      tdMenu.appendChild(dom.menu);
-      dom.tr.appendChild(tdMenu);
+          var tdMenu = document.createElement('td');
+          var menu = document.createElement('button');
+          dom.menu = menu;
+      if(this.type == 'array') {
+          menu.className = 'insert'; //'contextmenu';
+          menu.menuType = 'insert';
+      } else {
+          menu.className = 'remove';
+          menu.menuType = 'remove';
+      }
+          //menu.title = 'Click to open the actions menu (Ctrl+M)';
+          tdMenu.appendChild(dom.menu);
+          dom.tr.appendChild(tdMenu);
     }
 
     // create tree and field
@@ -1239,6 +1245,25 @@ define(['./ContextMenu', './appendNodeFactory', './util'], function (ContextMenu
     return dom.tr;
   };
 
+  Node.prototype._onClear = function (event) {
+      if(this.type == 'array' || this.type == 'object') {
+          this.childs.forEach (function (child) {
+            child._onClear(event);
+          });
+      } else {
+        this.updateValue('');
+      }
+  }
+
+  Node.prototype._onClearPurge = function (event) {
+      if(this.parent.type == 'array' && this.parent.childs.length > 1)
+            this._onRemove();
+      if(this.type == 'array' || this.type == 'object') {
+          this.childs.forEach (function (child) {
+            child._onClearPurge(event);
+          });
+      }
+  }
   /**
    * DragStart event, fired on mousedown on the dragarea at the left side of a Node
    * @param {Event} event
@@ -1787,11 +1812,22 @@ define(['./ContextMenu', './appendNodeFactory', './util'], function (ContextMenu
       highlighter.highlight(node);
       highlighter.lock();
       util.addClassName(dom.menu, 'selected');
+      if(dom.menu.menuType == 'remove') {
+          this._onClear(event);
+          this._onClearPurge(event);
+      } else {
+          this.childs[this.childs.length - 1]._onDuplicate(event);
+          this.childs[this.childs.length - 1]._onClear(event);
+      }
+      /*
       this.showContextMenu(dom.menu, function () {
         util.removeClassName(dom.menu, 'selected');
         highlighter.unlock();
         highlighter.unhighlight();
       });
+      */
+      highlighter.unlock();
+      highlighter.unhighlight();
     }
 
     // expand events

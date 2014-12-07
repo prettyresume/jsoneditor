@@ -18,17 +18,22 @@ define(['./ContextMenu'], function (ContextMenu) {
       // switch mode
       editor.setMode(mode);
 
+      if(mode == 'tree') {
+        editor.node.childs[editor.node.childs.length - 1].expand(false);
+      }
       // restore focus on mode box
+      /*
       var modeBox = editor.dom && editor.dom.modeBox;
       if (modeBox) {
         modeBox.focus();
       }
+      */
     }
 
     // available modes
     var availableModes = {
       code: {
-        'text': 'Code',
+        'text': 'Advanced',
         'title': 'Switch to code highlighter',
         'click': function () {
           switchMode('code')
@@ -49,7 +54,7 @@ define(['./ContextMenu'], function (ContextMenu) {
         }
       },
       tree: {
-        'text': 'Tree',
+        'text': 'Simple',
         'title': 'Switch to tree editor',
         'click': function () {
           switchMode('tree');
@@ -85,16 +90,32 @@ define(['./ContextMenu'], function (ContextMenu) {
     var currentTitle = currentMode.text;
 
     // create the html element
-    var box = document.createElement('button');
-    box.className = 'modes separator';
-    box.innerHTML = currentTitle + ' &#x25BE;';
-    box.title = 'Switch editor mode';
-    box.onclick = function () {
-      var menu = new ContextMenu(items);
-      menu.show(box);
-    };
+    var outerBox = document.createElement('div');
+    for(var item in items) {
+        var item = items[item]
+        var box = document.createElement('button');
+        box.className = 'modes separator';
+        box.innerHTML = item['text']; //currentTitle; // + ' &#x25BE;';
+        box.title = 'Switch to ' + item['text']; //editor mode';
+        box.item = item;
+        box.onclick = item['click'];
+          //var menu = new ContextMenu(items);
+          //menu.show(box);
+        outerBox.appendChild(box);
+    }
+    /*
+     var box = document.createElement('button');
+     box.className = 'modes separator';
+     box.innerHTML = currentTitle + ' &#x25BE;';
+     box.title = 'Switch editor mode';
+     box.onclick = function () {
+         var menu = new ContextMenu(items);
+         menu.show(box);
+     };
+     var outerBox = box;
+    */
 
-    return box;
+    return outerBox;
   }
 
   return {
